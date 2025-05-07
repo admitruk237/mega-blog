@@ -1,8 +1,43 @@
-export const metadata = {
-  title: 'Blog Home Page',
-  description: 'This is the home page of the app',
-};
+import { getAllArticles } from './(server)/api';
+import { ROUTING } from './routing';
+import AppLink from './styles/app-link';
 
-export default function Home() {
-  return <>Hello world</>;
+const ARTICLES_PER_PAGE = 10;
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>;
+}) {
+  const page = Number.parseInt(
+    typeof searchParams.page === 'string' ? searchParams.page : '1'
+  );
+
+  const allArticles = await getAllArticles();
+  const articles = allArticles.slice(
+    (page - 1) * ARTICLES_PER_PAGE,
+    page * ARTICLES_PER_PAGE
+  );
+
+  const nextPageUrl = {
+    search: new URLSearchParams({
+      page: (page + 1).toString(),
+    }).toString(),
+  };
+
+  return (
+    <>
+      <h1 className="text-2xl font-bold">Drag12 blog page {page}</h1>
+      <ul className="space-y-2">
+        {articles.map((article) => (
+          <li key={article.name}>
+            <AppLink href={ROUTING.article(article.name)}>
+              {article.header}
+            </AppLink>
+          </li>
+        ))}
+      </ul>
+      <AppLink href={nextPageUrl}>Next Page</AppLink>
+    </>
+  );
 }
