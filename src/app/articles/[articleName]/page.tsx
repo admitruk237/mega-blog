@@ -1,10 +1,6 @@
 import { getArticleByName } from '@/app/(server)/api';
 
-export default async function ArticlePage({
-  params,
-}: {
-  params: { articleName: string };
-}) {
+export default async function ArticlePage({ params }: Params) {
   const { articleName } = params;
   const article = await getArticleByName(articleName);
 
